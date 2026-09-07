@@ -66,6 +66,76 @@ tbody tr:focus-visible {
   white-space: nowrap;
 }
 
+.authArea {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.authUser {
+  max-width: 180px;
+  overflow: hidden;
+  color: #2d3842;
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.authButton {
+  min-height: 34px;
+  padding: 0 14px;
+  color: #fff;
+  border: 1px solid #18893e;
+  border-radius: 6px;
+  background: #1f9d49;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.authButton:hover {
+  border-color: #0f6f31;
+  background: #16833b;
+}
+
+.authButtonSecondary {
+  color: #16833b;
+  border-color: #8ed19d;
+  background: #fff;
+}
+
+.authButtonSecondary:hover {
+  color: #0f6f31;
+  border-color: #65bd7a;
+  background: #eaf7ee;
+}
+
+.dangerButton {
+  min-height: 34px;
+  padding: 0 14px;
+  color: #fff;
+  border: 1px solid #b42318;
+  border-radius: 6px;
+  background: #d92d20;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background-color 120ms ease, border-color 120ms ease, opacity 120ms ease;
+}
+
+.dangerButton:hover:not(:disabled) {
+  border-color: #912018;
+  background: #b42318;
+}
+
+.dangerButton:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
 .mobileControls {
   display: none;
 }
@@ -171,6 +241,14 @@ td {
 
 td:nth-child(2) {
   font-weight: 700;
+}
+
+.stateCell {
+  height: 80px;
+  color: #68747f;
+  font-weight: 700;
+  text-align: center;
+  white-space: normal;
 }
 
 .emailCell {
@@ -305,6 +383,173 @@ dd {
   line-height: 1.45;
 }
 
+.detailsActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 18px;
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(14, 22, 30, 0.34);
+}
+
+.authModal {
+  width: min(390px, 100%);
+  padding: 22px;
+  border: 1px solid #d9e1e8;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 18px 48px rgba(11, 22, 33, 0.2);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #2da54e;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  color: #04090c;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.closeButton {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: #46515b;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.closeButton:hover {
+  color: #0f6f31;
+  border-color: #8ed19d;
+  background: #eaf7ee;
+}
+
+.authField {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 14px;
+}
+
+.authField span {
+  color: #67727d;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.requiredMark {
+  margin-left: 3px;
+  color: #d92d20;
+}
+
+.authField input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  color: #1c242b;
+  border: 1px solid #c9d0d6;
+  border-radius: 4px;
+  outline: none;
+}
+
+.authField input[aria-invalid="true"] {
+  border-color: #d92d20;
+}
+
+.authField select {
+  height: 40px;
+  font-size: 14px;
+}
+
+.fieldError {
+  min-height: 16px;
+  color: #b42318;
+  font-size: 12px;
+  font-style: normal;
+  line-height: 1.3;
+}
+
+.authField input:focus {
+  outline: 2px solid #22a04d;
+  outline-offset: -1px;
+}
+
+.authError {
+  margin: 0 0 14px;
+  color: #b42318;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.submitButton {
+  width: 100%;
+  min-height: 40px;
+  color: #fff;
+  border: 1px solid #18893e;
+  border-radius: 6px;
+  background: #1f9d49;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: #16833b;
+}
+
+.submitButton:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.employeeModal {
+  width: min(760px, 100%);
+}
+
+.employeeFormGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 14px;
+}
+
+.confirmModal {
+  width: min(430px, 100%);
+}
+
+.confirmText {
+  margin: 0 0 18px;
+  color: #2b333b;
+  line-height: 1.45;
+}
+
+.confirmActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
 @media (max-width: 900px) {
   body {
     background: #f6f8fa;
@@ -326,21 +571,42 @@ dd {
     position: sticky;
     top: 0;
     z-index: 5;
-    align-items: stretch;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
     gap: 8px;
     padding: 12px;
     background: #fff;
   }
 
   .searchInput {
+    grid-column: 1 / -1;
     width: 100%;
     height: 42px;
     font-size: 16px;
   }
 
   .resultCount {
-    align-self: flex-end;
+    align-self: center;
+  }
+
+  .authArea {
+    justify-content: flex-end;
+    margin-left: 0;
+  }
+
+  .authButton {
+    min-height: 36px;
+    padding: 0 12px;
+  }
+
+  .dangerButton {
+    min-height: 36px;
+    padding: 0 12px;
+  }
+
+  .authUser {
+    max-width: 120px;
   }
 
   .mobileControls {
@@ -450,6 +716,16 @@ dd {
     font-size: 15px;
   }
 
+  .stateCell {
+    display: block;
+    padding: 22px 12px;
+    text-align: center;
+  }
+
+  .stateCell::before {
+    content: none;
+  }
+
   .emailCell {
     align-items: flex-start;
     flex-wrap: wrap;
@@ -487,8 +763,25 @@ dd {
     font-size: 20px;
   }
 
+  .detailsActions {
+    flex-wrap: wrap;
+  }
+
   .detailRow {
     padding: 12px 0;
+  }
+
+  .modalBackdrop {
+    align-items: start;
+    padding: 68px 12px 12px;
+  }
+
+  .authModal {
+    padding: 18px;
+  }
+
+  .employeeFormGrid {
+    grid-template-columns: 1fr;
   }
 }
 
