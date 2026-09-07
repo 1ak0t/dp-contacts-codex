@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-const defaultCorsOrigins = ["http://127.0.0.1:5173", "http://localhost:5173"];
+const defaultCorsOrigins = ["http://192.168.10.119", "http://127.0.0.1:5173", "http://localhost:5173"];
 
 function readCorsOrigins(): string[] {
   const value = process.env.CORS_ORIGIN;
@@ -16,6 +16,7 @@ function readCorsOrigins(): string[] {
 }
 
 export const config = {
+  host: process.env.HOST ?? "0.0.0.0",
   port: Number(process.env.PORT ?? 4000),
   corsOrigins: readCorsOrigins(),
   jwtSecret: process.env.JWT_SECRET ?? "dev-secret-change-me",
