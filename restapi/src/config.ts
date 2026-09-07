@@ -1,6 +1,7 @@
 import "dotenv/config";
 
 const defaultCorsOrigins = [
+  "http://192.168.10.119",
   "http://192.168.10.119:4000",
   "http://127.0.0.1:4000",
   "http://localhost:4000",
