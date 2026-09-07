@@ -4,6 +4,8 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "import:csv": "tsx src/scripts/importCsv.ts",
+    "test:import": "npm run build && node --test tests/importEmployees.test.mjs",
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js"
@@ -11,6 +13,7 @@
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
+    "csv-parse": "^7.0.2",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
