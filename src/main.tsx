@@ -79,7 +79,7 @@ const emptyEmployeeForm: EmployeeForm = {
 };
 const phoneRegex = /^\+7\d{10}$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const apiUrl = import.meta.env.VITE_API_URL ?? "/api";
+const apiUrl = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:4000";
 const authTokenKey = "dp_contacts_auth_token";
 
 function normalizePhone(value: string): string {

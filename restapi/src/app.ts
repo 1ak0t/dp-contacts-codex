@@ -1,6 +1,5 @@
 import cors from "cors";
 import express from "express";
-import { fileURLToPath } from "node:url";
 import { config } from "./config.js";
 import { authRouter } from "./routes/authRoutes.js";
 import { contactsRouter } from "./routes/contactsRoutes.js";
@@ -29,14 +28,6 @@ app.get("/health", (_request, response) => {
 
 app.use("/auth", authRouter);
 app.use("/contacts", contactsRouter);
-app.use("/api/auth", authRouter);
-app.use("/api/contacts", contactsRouter);
-app.get("/api/health", (_request, response) => {
-  response.json({ status: "ok" });
-});
-
-// Both src/ and dist/ runs serve the frontend build from the project root.
-app.use(express.static(fileURLToPath(new URL("../../dist/", import.meta.url))));
 
 app.use((_request, response) => {
   response.status(404).json({ message: "Not found" });
