@@ -18,6 +18,7 @@ export async function listEmployees(): Promise<Employee[]> {
   return employees.map(({ _id, ...employee }) => ({
     id: _id.toString(),
     ...employee,
+    innerPhone: employee.innerPhone ?? "",
   }));
 }
 

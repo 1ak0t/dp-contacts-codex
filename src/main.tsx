@@ -4,7 +4,7 @@ import "./styles.css";
 
 type Employee = Record<string, string>;
 
-type ColumnKey = "op" | "fio" | "phoneNumber" | "email";
+type ColumnKey = "op" | "fio" | "jobTitle" | "phoneNumber" | "email";
 
 type SortConfig = {
   key: ColumnKey;
@@ -22,6 +22,7 @@ type EmployeeForm = {
   orgUnit: string;
   jobTitle: string;
   phoneNumber: string;
+  innerPhone: string;
   persEmail: string;
   jobType: string;
   email: string;
@@ -30,41 +31,27 @@ type EmployeeForm = {
 const columns: Array<{ key: ColumnKey; label: string }> = [
   { key: "op", label: "ОП" },
   { key: "fio", label: "ФИО" },
+  { key: "jobTitle", label: "Должность" },
   { key: "phoneNumber", label: "Телефон" },
   { key: "email", label: "E-Mail" },
 ];
 
-const detailLabels: Record<string, string> = {
-  fio: "ФИО",
-  op: "ОП",
-  orgUnit: "Подразделение",
-  jobTitle: "Должность",
-  phoneNumber: "Телефон",
-  persEmail: "Личный E-Mail",
-  jobType: "Форма занятости",
-  email: "E-Mail",
-};
+const filterColumns = columns.filter((column) => column.key !== "phoneNumber" && column.key !== "email");
 
 const employeeFormLabels: Record<keyof EmployeeForm, string> = {
-  fio: "ФИО",
   op: "ОП",
-  orgUnit: "Подразделение",
+  fio: "ФИО",
   jobTitle: "Должность",
-  phoneNumber: "Телефон",
+  orgUnit: "Подразделение",
+  phoneNumber: "Мобильный телефон",
+  innerPhone: "Телефон внутренний",
+  email: "Корпоративный E-Mail",
   persEmail: "Личный E-Mail",
   jobType: "Форма занятости",
-  email: "E-Mail",
 };
 
 const employeeFormFields: Array<keyof EmployeeForm> = [
-  "fio",
-  "op",
-  "orgUnit",
-  "jobTitle",
-  "phoneNumber",
-  "persEmail",
-  "jobType",
-  "email",
+  "op", "fio", "jobTitle", "orgUnit", "phoneNumber", "innerPhone", "email", "persEmail", "jobType",
 ];
 const requiredEmployeeFields: Array<keyof EmployeeForm> = ["fio", "op", "orgUnit", "jobTitle", "phoneNumber", "jobType"];
 const emptyEmployeeForm: EmployeeForm = {
@@ -73,6 +60,7 @@ const emptyEmployeeForm: EmployeeForm = {
   orgUnit: "",
   jobTitle: "",
   phoneNumber: "",
+  innerPhone: "",
   persEmail: "",
   jobType: "",
   email: "",
@@ -129,6 +117,27 @@ function uniqueValues(data: Employee[], key: ColumnKey): string[] {
   );
 }
 
+function CopyButton({ label, onCopy }: { label: string; onCopy: () => void }) {
+  return (
+    <button
+      className="copyIconButton"
+      type="button"
+      aria-label={label}
+      title={label}
+      onClick={(event) => {
+        event.stopPropagation();
+        onCopy();
+      }}
+      onKeyDown={(event) => event.stopPropagation()}
+    >
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <rect x="8" y="8" width="12" height="12" rx="2" />
+        <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+      </svg>
+    </button>
+  );
+}
+
 function App() {
   const [employees, setEmployees] = React.useState<Employee[]>([]);
   const [isEmployeesLoading, setIsEmployeesLoading] = React.useState(true);
@@ -137,11 +146,13 @@ function App() {
   const [filters, setFilters] = React.useState<Record<ColumnKey, string>>({
     op: "",
     fio: "",
+    jobTitle: "",
     phoneNumber: "",
     email: "",
   });
   const [sortConfig, setSortConfig] = React.useState<SortConfig>({ key: "fio", direction: "asc" });
   const [selectedEmployee, setSelectedEmployee] = React.useState<Employee | null>(null);
+  const [onlyOfficeEmployees, setOnlyOfficeEmployees] = React.useState(true);
   const [copiedEmail, setCopiedEmail] = React.useState("");
   const [copiedPhone, setCopiedPhone] = React.useState("");
   const [authUser, setAuthUser] = React.useState<AuthUser | null>(null);
@@ -192,8 +203,9 @@ function App() {
     const normalizedSearch = search.trim().toLocaleLowerCase("ru");
 
     return employees
+      .filter((employee) => !onlyOfficeEmployees || Boolean(employee.email?.trim()))
       .filter((employee) =>
-        columns.every((column) => !filters[column.key] || getColumnValue(employee, column.key) === filters[column.key]),
+        filterColumns.every((column) => !filters[column.key] || getColumnValue(employee, column.key) === filters[column.key]),
       )
       .filter((employee) => {
         if (!normalizedSearch) {
@@ -214,7 +226,17 @@ function App() {
           })
         );
       });
-  }, [employees, filters, search, sortConfig]);
+  }, [employees, filters, search, sortConfig, onlyOfficeEmployees]);
+
+  React.useEffect(() => {
+    setSelectedEmployee((current) => {
+      if (search.trim()) {
+        return visibleEmployees[0] ?? null;
+      }
+
+      return current && visibleEmployees.includes(current) ? current : null;
+    });
+  }, [search, visibleEmployees]);
 
   React.useEffect(() => {
     const controller = new AbortController();
@@ -527,6 +549,14 @@ function App() {
             placeholder="Поиск по таблице"
             type="search"
           />
+          <label className="officeFilter">
+            <input
+              type="checkbox"
+              checked={onlyOfficeEmployees}
+              onChange={(event) => setOnlyOfficeEmployees(event.target.checked)}
+            />
+            <span>Только офисные сотрудники</span>
+          </label>
           <span className="resultCount">
             {isEmployeesLoading ? "Загрузка..." : `${visibleEmployees.length} из ${employees.length}`}
           </span>
@@ -570,7 +600,7 @@ function App() {
             </select>
           </label>
 
-          {columns.map((column) => (
+          {filterColumns.map((column) => (
             <label className="mobileControl" key={column.key}>
               <span>{column.label}</span>
               <select value={filters[column.key]} onChange={(event) => updateFilter(column.key, event.target.value)}>
@@ -597,7 +627,7 @@ function App() {
                         {sortConfig.key === column.key ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
                       </span>
                     </button>
-                    <select
+                    {filterColumns.includes(column) && <select
                       aria-label={`Фильтр: ${column.label}`}
                       value={filters[column.key]}
                       onChange={(event) => updateFilter(column.key, event.target.value)}
@@ -608,7 +638,7 @@ function App() {
                           {value}
                         </option>
                       ))}
-                    </select>
+                    </select>}
                   </th>
                 ))}
               </tr>
@@ -677,7 +707,8 @@ function App() {
                               >
                                 {value}
                               </button>
-                              {copiedEmail === value && <span className="copyStatus">Скопировано</span>}
+                              <CopyButton label={`Скопировать почту ${value}`} onCopy={() => void copyEmail(value)} />
+                              {copiedEmail === value && <span className="copyStatus" role="status">Скопировано</span>}
                             </div>
                           ) : column.key === "phoneNumber" && value ? (
                             <div className="copyCell">
@@ -691,7 +722,8 @@ function App() {
                               >
                                 {value}
                               </button>
-                              {copiedPhone === value && <span className="copyStatus">Скопировано</span>}
+                              <CopyButton label={`Скопировать мобильный телефон ${value}`} onCopy={() => void copyPhone(value)} />
+                              {copiedPhone === value && <span className="copyStatus" role="status">Скопировано</span>}
                             </div>
                           ) : (
                             value || "-"
@@ -712,12 +744,10 @@ function App() {
         {selectedEmployee ? (
           <>
             <dl>
-              {Object.entries(selectedEmployee)
-                .filter(([key]) => key !== "id")
-                .map(([key, value]) => (
+              {employeeFormFields.map((key) => (
                   <div className="detailRow" key={key}>
-                    <dt>{detailLabels[key] ?? key}</dt>
-                    <dd>{value || "-"}</dd>
+                    <dt>{employeeFormLabels[key]}</dt>
+                    <dd>{selectedEmployee[key] || "-"}</dd>
                   </div>
                 ))}
             </dl>
@@ -822,7 +852,7 @@ function App() {
                   ) : (
                     <input
                       aria-invalid={Boolean(employeeFieldErrors[field])}
-                      inputMode={field === "phoneNumber" ? "tel" : undefined}
+                      inputMode={field === "phoneNumber" || field === "innerPhone" ? "tel" : undefined}
                       onChange={(event) => updateEmployeeForm(field, event.target.value)}
                       pattern={field === "phoneNumber" ? "\\+7-\\d{3}-\\d{3}-\\d{2}-\\d{2}" : undefined}
                       placeholder={

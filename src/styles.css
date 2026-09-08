@@ -36,6 +36,7 @@ select {
 
 .tableToolbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 16px;
   padding: 14px 18px 8px;
@@ -58,6 +59,21 @@ select:focus,
 tbody tr:focus-visible {
   outline: 2px solid #22a04d;
   outline-offset: -1px;
+}
+
+.officeFilter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.officeFilter input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #22a04d;
 }
 
 .resultCount {
@@ -169,19 +185,23 @@ th {
 }
 
 th:nth-child(1) {
-  width: 16%;
+  width: 12%;
 }
 
 th:nth-child(2) {
-  width: 36%;
+  width: 25%;
 }
 
 th:nth-child(3) {
-  width: 18%;
+  width: 20%;
 }
 
 th:nth-child(4) {
-  width: 30%;
+  width: 18%;
+}
+
+th:nth-child(5) {
+  width: 25%;
 }
 
 .sortButton {
@@ -283,7 +303,8 @@ td:nth-child(2) {
   text-decoration: underline;
 }
 
-.writeLink {
+.writeLink,
+.copyIconButton {
   display: inline-grid;
   place-items: center;
   flex: 0 0 auto;
@@ -294,17 +315,25 @@ td:nth-child(2) {
   border-radius: 6px;
   background: transparent;
   text-decoration: none;
+  cursor: pointer;
   transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, transform 120ms ease;
 }
 
-.writeLink:hover {
+.writeLink:hover,
+.copyIconButton:hover {
   color: #0f6f31;
   border-color: #8ed19d;
   background: #eaf7ee;
   transform: translateY(-1px);
 }
 
-.writeLink svg {
+.copyIconButton:focus-visible {
+  outline: 2px solid #22a04d;
+  outline-offset: 2px;
+}
+
+.writeLink svg,
+.copyIconButton svg {
   width: 18px;
   height: 18px;
   fill: none;
@@ -588,6 +617,11 @@ dd {
 
   .resultCount {
     align-self: center;
+  }
+
+  .officeFilter {
+    grid-column: 1 / -1;
+    min-height: 32px;
   }
 
   .authArea {

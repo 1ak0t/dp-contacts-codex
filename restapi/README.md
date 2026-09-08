@@ -35,6 +35,7 @@ MongoDB используется по адресу `mongodb://localhost:27017/`,
       "orgUnit": "Подразделение",
       "jobTitle": "Должность",
       "phoneNumber": "+70000000000",
+      "innerPhone": "0012",
       "persEmail": "",
       "jobType": "Основное место работы",
       "email": ""
@@ -50,6 +51,8 @@ MongoDB используется по адресу `mongodb://localhost:27017/`,
 ```http
 Authorization: Bearer jwt-token
 ```
+
+`innerPhone` — необязательная строка внутреннего телефона, без маски мобильного номера.
 
 Обязательные поля: `fio`, `op`, `orgUnit`, `jobTitle`, `phoneNumber`, `jobType`.
 `op` должен совпадать с одним из существующих значений, `phoneNumber` - с форматом `+7xxxxxxxxxx`.

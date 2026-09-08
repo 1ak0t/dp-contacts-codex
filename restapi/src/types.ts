@@ -15,6 +15,7 @@ export type Employee = {
   orgUnit: string;
   jobTitle: string;
   phoneNumber: string;
+  innerPhone: string;
   persEmail: string;
   jobType: string;
   email: string;

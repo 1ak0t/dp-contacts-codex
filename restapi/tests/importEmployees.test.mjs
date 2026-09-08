@@ -13,6 +13,7 @@ test('UTF-8 BOM, quoted commas, quotes, line breaks and empty strings', () => {
   assert.equal(employee.orgUnit, 'Отдел\n1');
   assert.equal(employee.phoneNumber, '+70000000000');
   assert.equal(employee.email, '');
+  assert.equal(employee.innerPhone, '');
 });
 
 test('invalid files fail before import', () => {
@@ -31,8 +32,8 @@ test('repeated imports preserve existing documents and skip exact duplicates', a
       let matchedCount = 0, upsertedCount = 0;
       for (const { updateOne: op } of operations) {
         assert.equal(op.upsert, true);
-        assert.deepEqual(op.update, { $setOnInsert: op.filter });
-        if (stored.some(doc => Object.entries(op.filter).every(([key, value]) => doc[key] === value))) matchedCount++;
+        assert.equal(op.update.$setOnInsert.innerPhone, employee.innerPhone);
+        if (stored.some(doc => Object.entries(op.filter).every(([key, value]) => key === '$or' ? doc.innerPhone === '' || !Object.hasOwn(doc, 'innerPhone') : doc[key] === value))) matchedCount++;
         else { stored.push({ ...op.update.$setOnInsert }); upsertedCount++; }
       }
       return { matchedCount, upsertedCount };
@@ -42,4 +43,11 @@ test('repeated imports preserve existing documents and skip exact duplicates', a
   assert.deepEqual(await importEmployees(collection, [employee]), { inserted: 0, skipped: 1 });
   assert.equal(stored.length, 2);
   assert.equal(stored[0].fio, 'Другой сотрудник');
+  delete stored[1].innerPhone;
+  assert.deepEqual(await importEmployees(collection, [employee]), { inserted: 0, skipped: 1 });
+});
+
+test('optional innerPhone preserves leading zeros', () => {
+  const [employee] = parse(header.trimEnd() + ',innerPhone\n' + row.trimEnd() + ',0012\n');
+  assert.equal(employee.innerPhone, '0012');
 });

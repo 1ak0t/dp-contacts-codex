@@ -12,6 +12,7 @@ const allFields: Array<keyof Employee> = [
   "orgUnit",
   "jobTitle",
   "phoneNumber",
+  "innerPhone",
   "persEmail",
   "jobType",
   "email",
