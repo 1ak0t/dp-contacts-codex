@@ -1,5 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
+import { copyText } from "./clipboard";
 import "./styles.css";
 
 type Employee = Record<string, string>;
@@ -36,7 +37,7 @@ const columns: Array<{ key: ColumnKey; label: string }> = [
   { key: "email", label: "E-Mail" },
 ];
 
-const filterColumns = columns.filter((column) => column.key !== "phoneNumber" && column.key !== "email");
+const filterColumns = columns.filter((column) => column.key === "op" || column.key === "fio");
 
 const employeeFormLabels: Record<keyof EmployeeForm, string> = {
   op: "ОП",
@@ -44,7 +45,7 @@ const employeeFormLabels: Record<keyof EmployeeForm, string> = {
   jobTitle: "Должность",
   orgUnit: "Подразделение",
   phoneNumber: "Мобильный телефон",
-  innerPhone: "Телефон внутренний",
+  innerPhone: "Внутренний телефон",
   email: "Корпоративный E-Mail",
   persEmail: "Личный E-Mail",
   jobType: "Форма занятости",
@@ -155,6 +156,7 @@ function App() {
   const [onlyOfficeEmployees, setOnlyOfficeEmployees] = React.useState(true);
   const [copiedEmail, setCopiedEmail] = React.useState("");
   const [copiedPhone, setCopiedPhone] = React.useState("");
+  const [copyError, setCopyError] = React.useState("");
   const [authUser, setAuthUser] = React.useState<AuthUser | null>(null);
   const [authToken, setAuthToken] = React.useState(() => localStorage.getItem(authTokenKey) ?? "");
   const [isAuthOpen, setIsAuthOpen] = React.useState(false);
@@ -314,9 +316,15 @@ function App() {
       return;
     }
 
-    await navigator.clipboard.writeText(email);
-    setCopiedEmail(email);
-    window.setTimeout(() => setCopiedEmail((current) => (current === email ? "" : current)), 1600);
+    setCopyError("");
+    setCopiedEmail("");
+    try {
+      await copyText(email);
+      setCopiedEmail(email);
+      window.setTimeout(() => setCopiedEmail((current) => (current === email ? "" : current)), 1600);
+    } catch {
+      setCopyError("Не удалось скопировать почту. Выделите адрес и скопируйте его вручную.");
+    }
   };
 
   const copyPhone = async (phone: string) => {
@@ -324,9 +332,15 @@ function App() {
       return;
     }
 
-    await navigator.clipboard.writeText(phone);
-    setCopiedPhone(phone);
-    window.setTimeout(() => setCopiedPhone((current) => (current === phone ? "" : current)), 1600);
+    setCopyError("");
+    setCopiedPhone("");
+    try {
+      await copyText(phone);
+      setCopiedPhone(phone);
+      window.setTimeout(() => setCopiedPhone((current) => (current === phone ? "" : current)), 1600);
+    } catch {
+      setCopyError("Не удалось скопировать телефон. Выделите номер и скопируйте его вручную.");
+    }
   };
 
   const handleSort = (key: ColumnKey) => {
@@ -615,6 +629,7 @@ function App() {
           ))}
         </div>
 
+        {copyError && <p className="authError" role="alert">{copyError}</p>}
         <div className="tableWrap">
           <table>
             <thead>
