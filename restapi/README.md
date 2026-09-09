@@ -11,7 +11,8 @@ npm run dev
 ```
 
 По умолчанию API слушает все интерфейсы (`HOST=0.0.0.0`, `PORT=4000`).
-Для IIS на порту 80 разрешён Origin `http://10.13.2.73`.
+В production API запускается по HTTPS с сертификатом из `../ssl`.
+Для IIS на порту 443 разрешён Origin `https://contacts.detail-project.ru`.
 Обновите существующий `.env` по [инструкции размещения](../README.md).
 MongoDB используется по адресу `mongodb://localhost:27017/`, база данных - `contacts`.
 
@@ -20,6 +21,8 @@ MongoDB используется по адресу `mongodb://localhost:27017/`,
 ### `GET /health`
 
 Проверка работоспособности.
+
+Production URL: `https://contacts.detail-project.ru:4000/health`.
 
 ### `GET /contacts`
 
