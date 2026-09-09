@@ -33,7 +33,7 @@ export default function EmployeeDetails({ selectedEmployee,authUser,openEditEmpl
           )}
         </>
       ):(
-        <p className="emptyDetails">Нажмите на сотрудника для получения подробной информации</p>
+        <p className="emptyDetails">Выберите сотрудника для получения подробной информации</p>
       )}
     </aside>
   );

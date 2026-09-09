@@ -1,3 +1,4 @@
+import React from "react";
 import type { Employee,AuthUser } from "../types";
 
 type Props={
@@ -15,15 +16,39 @@ type Props={
 };
 
 export default function EmployeeToolbar({ search,setSearch,onlyOfficeEmployees,setOnlyOfficeEmployees,isEmployeesLoading,visibleEmployees,employees,authUser,openAddEmployeeModal,handleLogout,setIsAuthOpen }: Props) {
+  React.useEffect(() => {
+    const handleEscape=(event: KeyboardEvent) => {
+      if(event.key==="Escape"&&search) {
+        setSearch("");
+      }
+    };
+
+    window.addEventListener("keydown",handleEscape);
+    return () => window.removeEventListener("keydown",handleEscape);
+  },[search,setSearch]);
+
   return (
     <div className="tableToolbar">
-      <input
-        className="searchInput"
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-        placeholder="Поиск по ФИО, Телефону, E-Mail"
-        type="search"
-      />
+      <div className="searchField">
+        <input
+          className="searchInput"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Поиск по ФИО, Телефону, E-Mail"
+          type="text"
+        />
+        {search&&(
+          <button
+            aria-label="Очистить поиск"
+            className="clearSearchButton"
+            type="button"
+            onClick={() => setSearch("")}
+            title="Очистить поиск"
+          >
+            ×
+          </button>
+        )}
+      </div>
       <label className="officeFilter">
         <input
           type="checkbox"
