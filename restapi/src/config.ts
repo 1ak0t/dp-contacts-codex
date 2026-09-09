@@ -22,7 +22,7 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET ?? "dev-secret-change-me",
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? "8h",
   authLogin: process.env.AUTH_LOGIN ?? "admin",
-  authPassword: process.env.AUTH_PASSWORD ?? "admin123",
+  authPassword: process.env.AUTH_PASSWORD ?? "DP-admin-7mK4-rQ92",
   mongoUri: process.env.MONGO_URI ?? "mongodb://localhost:27017/",
   mongoDbName: process.env.MONGO_DB_NAME ?? "contacts",
 };

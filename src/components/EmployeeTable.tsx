@@ -91,7 +91,12 @@ export default function EmployeeTable({ sortConfig,handleSort,filters,updateFilt
                   const value=getColumnValue(employee,column.key);
                   return (
                     <td data-label={column.label} key={column.key}>
-                      {column.key==="email"&&value? (
+                      {column.key==="fio"? (
+                        <div className="fioCell">
+                          {employee.isAdmin&&<span className="adminBadge">Администратор</span>}
+                          <span>{value||"-"}</span>
+                        </div>
+                      ):column.key==="email"&&value? (
                         <div className="emailCell">
                           <a
                             aria-label={`Написать на ${value}`}

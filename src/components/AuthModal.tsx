@@ -28,7 +28,7 @@ export default function AuthModal({ setIsAuthOpen,handleLogin,authLogin,setAuthL
         </div>
 
         <label className="authField">
-          <span>Логин</span>
+          <span>E-Mail или admin</span>
           <input
             autoComplete="username"
             autoFocus

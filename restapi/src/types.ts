@@ -1,11 +1,13 @@
 export type AuthUser = {
   id: string;
   login: string;
+  isSystemAdmin?: boolean;
 };
 
 export type TokenPayload = {
   sub: string;
   login: string;
+  isSystemAdmin?: boolean;
 };
 
 export type Employee = {
@@ -19,4 +21,6 @@ export type Employee = {
   persEmail: string;
   jobType: string;
   email: string;
+  isAdmin?: boolean;
+  adminPasswordHash?: string;
 };

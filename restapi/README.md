@@ -71,10 +71,13 @@ Authorization: Bearer jwt-token
 
 ```json
 {
-  "login": "admin",
-  "password": "admin123"
+  "login": "employee@example.com",
+  "password": "generated-password"
 }
 ```
+
+Для пустой базы остаётся системный администратор из `.env`: по умолчанию
+логин `admin`, пароль `DP-admin-7mK4-rQ92`.
 
 Ответ:
 

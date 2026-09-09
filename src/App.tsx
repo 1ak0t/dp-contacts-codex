@@ -11,9 +11,18 @@ import EmployeeDetails from "./components/EmployeeDetails";
 import AuthModal from "./components/AuthModal";
 import EmployeeModal from "./components/EmployeeModal";
 import DeleteEmployeeModal from "./components/DeleteEmployeeModal";
+import AdminEmployeeModal from "./components/AdminEmployeeModal";
 
 const apiUrl=import.meta.env.VITE_API_URL??"http://127.0.0.1:4000";
 const authTokenKey="dp_contacts_auth_token";
+type AdminAction="grant"|"reset"|"revoke";
+
+function generatePassword(): string {
+  const alphabet="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+  const values=new Uint32Array(14);
+  crypto.getRandomValues(values);
+  return Array.from(values,(value) => alphabet[value%alphabet.length]).join("");
+}
 
 export default function App() {
   const [employees,setEmployees]=React.useState<Employee[]>([]);
@@ -48,6 +57,9 @@ export default function App() {
   const [isEmployeeSaving,setIsEmployeeSaving]=React.useState(false);
   const [deleteError,setDeleteError]=React.useState("");
   const [isEmployeeDeleting,setIsEmployeeDeleting]=React.useState(false);
+  const [adminModal,setAdminModal]=React.useState<{ employee: Employee; action: AdminAction; password: string }|null>(null);
+  const [adminError,setAdminError]=React.useState("");
+  const [isAdminSaving,setIsAdminSaving]=React.useState(false);
 
   const employeeFieldErrors=React.useMemo<Partial<Record<keyof EmployeeForm,string>>>(() => {
     const errors: Partial<Record<keyof EmployeeForm,string>>={};
@@ -276,6 +288,26 @@ export default function App() {
     setIsEmployeeDeleting(false);
   };
 
+  const openAdminModal=(employee: Employee,action: AdminAction) => {
+    setAdminModal({
+      employee,
+      action,
+      password: action==="revoke"? "":generatePassword(),
+    });
+    setAdminError("");
+  };
+
+  const closeAdminModal=() => {
+    setAdminModal(null);
+    setAdminError("");
+    setIsAdminSaving(false);
+  };
+
+  const replaceEmployee=(updatedEmployee: Employee) => {
+    setEmployees((current) => current.map((employee) => (employee.id===updatedEmployee.id? updatedEmployee:employee)));
+    setSelectedEmployee((current) => (current?.id===updatedEmployee.id? updatedEmployee:current));
+  };
+
   const validateEmployeeForm=(): string => {
     for(const field of requiredEmployeeFields) {
       if(!employeeForm[field].trim()) {
@@ -428,6 +460,51 @@ export default function App() {
     }
   };
 
+  const handleAdminAction=async () => {
+    if(!adminModal?.employee.id) {
+      setAdminError("Не удалось определить сотрудника");
+      return;
+    }
+
+    setAdminError("");
+    setIsAdminSaving(true);
+
+    const path =
+      adminModal.action==="reset"
+        ? `${apiUrl}/contacts/${adminModal.employee.id}/admin/reset-password`
+        :`${apiUrl}/contacts/${adminModal.employee.id}/admin`;
+    const options: RequestInit =
+      adminModal.action==="revoke"
+        ? {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+        : {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ password: adminModal.password }),
+        };
+
+    try {
+      const response=await fetch(path,options);
+      const data=(await response.json().catch(() => ({}))) as { employee?: Employee; message?: string };
+
+      if(!response.ok||!data.employee) {
+        throw new Error(data.message||"Не удалось обновить права администратора");
+      }
+
+      replaceEmployee(data.employee);
+      closeAdminModal();
+    } catch(error) {
+      setAdminError(error instanceof Error? error.message:"Не удалось обновить права администратора");
+    } finally {
+      setIsAdminSaving(false);
+    }
+  };
+
   return (
     <>
       <SiteHeader />
@@ -479,6 +556,7 @@ export default function App() {
           authUser={authUser}
           openEditEmployeeModal={openEditEmployeeModal}
           openDeleteEmployeeModal={openDeleteEmployeeModal}
+          openAdminModal={openAdminModal}
         />
 
         {isAuthOpen&&(
@@ -515,6 +593,18 @@ export default function App() {
             deleteError={deleteError}
             isEmployeeDeleting={isEmployeeDeleting}
             handleDeleteEmployee={handleDeleteEmployee}
+          />
+        )}
+
+        {adminModal&&(
+          <AdminEmployeeModal
+            employee={adminModal.employee}
+            action={adminModal.action}
+            password={adminModal.password}
+            error={adminError}
+            isSaving={isAdminSaving}
+            closeAdminModal={closeAdminModal}
+            handleConfirm={handleAdminAction}
           />
         )}
       </main>

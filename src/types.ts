@@ -1,4 +1,9 @@
-export type Employee = Record<string, string>;
+export type Employee = Record<string, string | boolean | undefined> & {
+  id?: string;
+  fio: string;
+  email: string;
+  isAdmin?: boolean;
+};
 
 export type ColumnKey = "op" | "fio" | "jobTitle" | "phoneNumber" | "email";
 

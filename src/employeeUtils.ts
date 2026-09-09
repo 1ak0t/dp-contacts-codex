@@ -29,17 +29,18 @@ export function formatPhone(value: string): string {
 
 export function getEmployeeForm(employee: Employee): EmployeeForm {
   return employeeFormFields.reduce<EmployeeForm>((form, field) => {
-    form[field] = field === "phoneNumber" ? formatPhone(employee[field] || "") : employee[field] || "";
+    const value = String(employee[field] || "");
+    form[field] = field === "phoneNumber" ? formatPhone(value) : value;
     return form;
   }, { ...emptyEmployeeForm });
 }
 
 export function getEmployeeEmail(employee: Employee): string {
-  return employee.email || employee.persEmail || "";
+  return String(employee.email || employee.persEmail || "");
 }
 
 export function getColumnValue(employee: Employee, key: ColumnKey): string {
-  return key === "email" ? getEmployeeEmail(employee) : employee[key] || "";
+  return key === "email" ? getEmployeeEmail(employee) : String(employee[key] || "");
 }
 
 export function uniqueValues(data: Employee[], key: ColumnKey): string[] {

@@ -10,16 +10,44 @@ async function getEmployeesCollection(): Promise<Collection<EmployeeDocument>> {
   return (await getDb()).collection<EmployeeDocument>(collectionName);
 }
 
+function toEmployee({ _id, adminPasswordHash, ...employee }: EmployeeDocument & { _id: ObjectId }): Employee {
+  void adminPasswordHash;
+  return {
+    id: _id.toString(),
+    ...employee,
+    innerPhone: employee.innerPhone ?? "",
+    isAdmin: Boolean(employee.isAdmin),
+  };
+}
+
 export async function listEmployees(): Promise<Employee[]> {
   const employees = await (await getEmployeesCollection())
     .find({}, { sort: { fio: 1 } })
     .toArray();
 
-  return employees.map(({ _id, ...employee }) => ({
-    id: _id.toString(),
-    ...employee,
-    innerPhone: employee.innerPhone ?? "",
-  }));
+  return employees.map(toEmployee);
+}
+
+export async function findAdminByEmail(email: string): Promise<(EmployeeDocument & { _id: ObjectId }) | null> {
+  return (await getEmployeesCollection()).findOne({
+    email,
+    isAdmin: true,
+    adminPasswordHash: { $type: "string" },
+  }) as Promise<(EmployeeDocument & { _id: ObjectId }) | null>;
+}
+
+export async function isEmployeeAdmin(id: string): Promise<boolean> {
+  if (!ObjectId.isValid(id)) {
+    return false;
+  }
+
+  const count = await (await getEmployeesCollection()).countDocuments({
+    _id: new ObjectId(id),
+    isAdmin: true,
+    adminPasswordHash: { $type: "string" },
+  }, { limit: 1 });
+
+  return count === 1;
 }
 
 export async function listOperations(): Promise<string[]> {
@@ -50,11 +78,35 @@ export async function updateEmployee(id: string, employee: EmployeeDocument): Pr
     return null;
   }
 
-  const { _id: updatedId, ...updatedEmployee } = result;
-  return {
-    id: updatedId.toString(),
-    ...updatedEmployee,
-  };
+  return toEmployee(result as EmployeeDocument & { _id: ObjectId });
+}
+
+export async function setEmployeeAdminPassword(id: string, passwordHash: string): Promise<Employee | null> {
+  if (!ObjectId.isValid(id)) {
+    return null;
+  }
+
+  const result = await (await getEmployeesCollection()).findOneAndUpdate(
+    { _id: new ObjectId(id), email: { $type: "string", $ne: "" } },
+    { $set: { isAdmin: true, adminPasswordHash: passwordHash } },
+    { returnDocument: "after" },
+  );
+
+  return result ? toEmployee(result as EmployeeDocument & { _id: ObjectId }) : null;
+}
+
+export async function revokeEmployeeAdmin(id: string): Promise<Employee | null> {
+  if (!ObjectId.isValid(id)) {
+    return null;
+  }
+
+  const result = await (await getEmployeesCollection()).findOneAndUpdate(
+    { _id: new ObjectId(id) },
+    { $unset: { isAdmin: "", adminPasswordHash: "" } },
+    { returnDocument: "after" },
+  );
+
+  return result ? toEmployee(result as EmployeeDocument & { _id: ObjectId }) : null;
 }
 
 export async function deleteEmployee(id: string): Promise<boolean> {
