@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-const defaultCorsOrigins = ["http://192.168.10.119", "http://127.0.0.1:5173", "http://localhost:5173"];
+const defaultCorsOrigins = ["http://10.13.2.73", "http://127.0.0.1:5173", "http://localhost:5173"];
 
 function readCorsOrigins(): string[] {
   const value = process.env.CORS_ORIGIN;

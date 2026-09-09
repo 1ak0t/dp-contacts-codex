@@ -35,22 +35,22 @@ npm run import:csv -- --dry-run
 файл, без подключения к MongoDB. Результат команды показывает количество
 добавленных и пропущенных записей.
 
-## Сервер 192.168.10.119
+## Сервер 10.13.2.73
 
-- Фронтенд: IIS, `http://192.168.10.119`, порт 80.
+- Фронтенд: IIS, `http://10.13.2.73`, порт 80.
 - API: отдельный процесс `npm run dev`, порт 4000.
 - MongoDB: на том же сервере, доступ из API через loopback.
-- Клиенты: сеть `192.168.10.0/24`.
+- Клиенты: сеть `10.13.2.0/24`.
 
 ### Фронтенд
 
 В корне проекта выполните `npm ci`, затем `npm run build`.
-При сборке `.env.production` задаёт `VITE_API_URL=http://192.168.10.119:4000`.
+При сборке `.env.production` задаёт `VITE_API_URL=http://10.13.2.73:4000`.
 Проверьте, что старые `.env.local`, `.env.production.local` или переменные
 окружения не переопределяют это значение.
 
 Скопируйте содержимое `dist` в каталог сайта IIS. Привязка сайта:
-HTTP, IP `192.168.10.119`, порт `80`, имя узла пустое.
+HTTP, IP `10.13.2.73`, порт `80`, имя узла пустое.
 В IIS должны быть включены Static Content, анонимный доступ и документ
 по умолчанию `index.html`. После замены сборки обновите страницу с Ctrl+F5.
 
@@ -68,7 +68,7 @@ HTTP, IP `192.168.10.119`, порт `80`, имя узла пустое.
 ```dotenv
 HOST=0.0.0.0
 PORT=4000
-CORS_ORIGIN=http://192.168.10.119,http://127.0.0.1:5173,http://localhost:5173
+CORS_ORIGIN=http://10.13.2.73,http://127.0.0.1:5173,http://localhost:5173
 MONGO_URI=mongodb://127.0.0.1:27017/
 MONGO_DB_NAME=contacts
 ```
@@ -87,8 +87,8 @@ MONGO_DB_NAME=contacts
 На сервере выполните PowerShell от администратора:
 
 ```powershell
-New-NetFirewallRule -DisplayName "DP Contacts HTTP LAN" -Direction Inbound -Action Allow -Protocol TCP -LocalAddress 192.168.10.119 -LocalPort 80 -RemoteAddress 192.168.10.0/24
-New-NetFirewallRule -DisplayName "DP Contacts API LAN" -Direction Inbound -Action Allow -Protocol TCP -LocalAddress 192.168.10.119 -LocalPort 4000 -RemoteAddress 192.168.10.0/24
+New-NetFirewallRule -DisplayName "DP Contacts HTTP LAN" -Direction Inbound -Action Allow -Protocol TCP -LocalAddress 10.13.2.73 -LocalPort 80 -RemoteAddress 10.13.2.0/24
+New-NetFirewallRule -DisplayName "DP Contacts API LAN" -Direction Inbound -Action Allow -Protocol TCP -LocalAddress 10.13.2.73 -LocalPort 4000 -RemoteAddress 10.13.2.0/24
 ```
 
 Это разрешающие правила для нужной подсети. Если требуется доступ только
@@ -99,12 +99,12 @@ MongoDB оставьте слушать `127.0.0.1`: клиентам не ну�
 ### Проверка
 
 1. На сервере откройте `http://127.0.0.1:4000/health`.
-2. С компьютера в `192.168.10.0/24` откройте
-   `http://192.168.10.119:4000/health`: ожидается `{"status":"ok"}`.
-3. Откройте `http://192.168.10.119:4000/contacts`: ожидается JSON с `employees`.
+2. С компьютера в `10.13.2.0/24` откройте
+   `http://10.13.2.73:4000/health`: ожидается `{"status":"ok"}`.
+3. Откройте `http://10.13.2.73:4000/contacts`: ожидается JSON с `employees`.
    Этот шаг проверяет и доступ к базе; `/health` базу не проверяет.
-4. Откройте `http://192.168.10.119`, проверьте контакты и вход.
-   В Network адрес запросов должен начинаться с `http://192.168.10.119:4000/`.
+4. Откройте `http://10.13.2.73`, проверьте контакты и вход.
+   В Network адрес запросов должен начинаться с `http://10.13.2.73:4000/`.
 
 Если видите `/api/contacts` на порту 80, загружена прежняя сборка.
 Если порт 4000 недоступен, проверьте процесс API, `HOST`, брандмауэр и сеть.
