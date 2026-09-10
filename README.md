@@ -38,10 +38,10 @@ npm run import:csv -- --dry-run
 ## Сервер contacts.detail-project.ru
 
 - Домен: `contacts.detail-project.ru`, DNS A-запись на сервер `10.13.2.73`.
-- Фронтенд: IIS, `https://contacts.detail-project.ru:5412`, порт 5412.
+- Фронтенд: IIS, `https://contacts.detail-project.ru`, порт 443.
 - API: отдельный HTTPS-процесс `npm run dev`, порт 4000.
 - MongoDB: на том же сервере, доступ из API через loopback.
-- Клиенты: любые подсети, если маршрут до сервера доступен.
+- Клиенты: сеть `10.13.2.0/24`.
 
 ### Фронтенд
 
@@ -51,7 +51,7 @@ npm run import:csv -- --dry-run
 окружения не переопределяют это значение.
 
 Скопируйте содержимое `dist` в каталог сайта IIS. Привязка сайта:
-HTTPS, IP `10.13.2.73`, порт `5412`, имя узла `contacts.detail-project.ru`.
+HTTPS, IP `10.13.2.73`, порт `443`, имя узла `contacts.detail-project.ru`.
 В IIS должны быть включены Static Content, анонимный доступ и документ
 по умолчанию `index.html`. После замены сборки обновите страницу с Ctrl+F5.
 Сертификат для IIS импортируйте из имеющегося PFX или создайте его из файлов
@@ -76,7 +76,7 @@ HTTPS=true
 SSL_KEY_PATH=../ssl/csr_key.txt
 SSL_CERT_PATH=../ssl/detail-project.ru.fullchain.crt
 SSL_PASSPHRASE=
-CORS_ORIGIN=https://contacts.detail-project.ru:5412,http://127.0.0.1:5412,http://localhost:5412
+CORS_ORIGIN=https://contacts.detail-project.ru,http://127.0.0.1:5173,http://localhost:5173
 MONGO_URI=mongodb://127.0.0.1:27017/
 MONGO_DB_NAME=contacts
 ```
@@ -99,11 +99,11 @@ MONGO_DB_NAME=contacts
 На сервере выполните PowerShell от администратора:
 
 ```powershell
-New-NetFirewallRule -DisplayName "DP Contacts Frontend HTTPS" -Direction Inbound -Action Allow -Protocol TCP -LocalAddress 10.13.2.73 -LocalPort 5412 -RemoteAddress Any
-New-NetFirewallRule -DisplayName "DP Contacts API HTTPS" -Direction Inbound -Action Allow -Protocol TCP -LocalAddress 10.13.2.73 -LocalPort 4000 -RemoteAddress Any
+New-NetFirewallRule -DisplayName "DP Contacts HTTPS LAN" -Direction Inbound -Action Allow -Protocol TCP -LocalAddress 10.13.2.73 -LocalPort 443 -RemoteAddress 10.13.2.0/24
+New-NetFirewallRule -DisplayName "DP Contacts API HTTPS LAN" -Direction Inbound -Action Allow -Protocol TCP -LocalAddress 10.13.2.73 -LocalPort 4000 -RemoteAddress 10.13.2.0/24
 ```
 
-Это разрешающие правила для любых удалённых подсетей. Если требуется доступ только
+Это разрешающие правила для нужной подсети. Если требуется доступ только
 из неё, проверьте существующие широкие разрешения IIS/Node.js в брандмауэре:
 добавление этих правил не сужает другие разрешающие правила.
 MongoDB оставьте слушать `127.0.0.1`: клиентам не нужен порт 27017.
@@ -111,17 +111,16 @@ MongoDB оставьте слушать `127.0.0.1`: клиентам не ну�
 ### Проверка
 
 1. На сервере откройте `https://contacts.detail-project.ru:4000/health`.
-2. С компьютера из любой нужной подсети откройте
+2. С компьютера в `10.13.2.0/24` откройте
    `https://contacts.detail-project.ru:4000/health`: ожидается `{"status":"ok"}`.
 3. Откройте `https://contacts.detail-project.ru:4000/contacts`: ожидается JSON с `employees`.
    Этот шаг проверяет и доступ к базе; `/health` базу не проверяет.
-4. Откройте `https://contacts.detail-project.ru:5412`, проверьте контакты и вход.
+4. Откройте `https://contacts.detail-project.ru`, проверьте контакты и вход.
    В Network адрес запросов должен начинаться с `https://contacts.detail-project.ru:4000/`.
 
 Если видите `/api/contacts` на порту 80, загружена прежняя сборка.
 Если порт 4000 недоступен, проверьте процесс API, `HOST`, сертификат,
 брандмауэр и сеть.
 Если вход блокируется CORS, проверьте фактический `CORS_ORIGIN` в `.env`
-и перезапустите API. Origin — `https://contacts.detail-project.ru:5412`,
+и перезапустите API. Origin — `https://contacts.detail-project.ru`,
 а не IP клиентского компьютера.
-

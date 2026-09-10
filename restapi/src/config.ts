@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-const defaultCorsOrigins = ["https://contacts.detail-project.ru:5412", "http://127.0.0.1:5412", "http://localhost:5412"];
+const defaultCorsOrigins = ["https://contacts.detail-project.ru", "http://127.0.0.1:5173", "http://localhost:5173"];
 
 function readBoolean(value: string | undefined): boolean {
   return ["1", "true", "yes", "on"].includes((value ?? "").trim().toLowerCase());
