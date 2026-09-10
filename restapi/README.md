@@ -12,7 +12,7 @@ npm run dev
 
 По умолчанию API слушает все интерфейсы (`HOST=0.0.0.0`, `PORT=4000`).
 В production API запускается по HTTPS с сертификатом из `../ssl`.
-Для IIS на порту 443 разрешён Origin `https://contacts.detail-project.ru`.
+Для IIS на порту 5412 разрешён Origin `https://contacts.detail-project.ru:5412`.
 Обновите существующий `.env` по [инструкции размещения](../README.md).
 MongoDB используется по адресу `mongodb://localhost:27017/`, база данных - `contacts`.
 
@@ -105,3 +105,4 @@ Authorization: Bearer jwt-token
 ### `POST /auth/logout`
 
 Stateless logout для фронтенда. Клиент должен удалить сохраненный токен.
+
