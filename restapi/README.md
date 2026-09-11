@@ -22,9 +22,9 @@ MongoDB используется по адресу `mongodb://localhost:27017/`,
 
 Проверка работоспособности.
 
-Production URL: `https://contacts.detail-project.ru:4000/health`.
+Production URL: `https://zeta.detail-project.ru:4000/health`.
 
-### `GET /contacts`
+### `GET /`
 
 Возвращает сотрудников из MongoDB:
 
@@ -47,7 +47,7 @@ Production URL: `https://contacts.detail-project.ru:4000/health`.
 }
 ```
 
-### `POST /contacts`
+### `POST /`
 
 Создает сотрудника в MongoDB. Требует заголовок:
 
@@ -60,11 +60,11 @@ Authorization: Bearer jwt-token
 Обязательные поля: `fio`, `op`, `orgUnit`, `jobTitle`, `phoneNumber`, `jobType`.
 `op` должен совпадать с одним из существующих значений, `phoneNumber` - с форматом `+7xxxxxxxxxx`.
 
-### `PUT /contacts/:id`
+### `PUT /:id`
 
-Обновляет сотрудника в MongoDB. Требует JWT-заголовок и принимает те же поля и правила валидации, что `POST /contacts`.
+Обновляет сотрудника в MongoDB. Требует JWT-заголовок и принимает те же поля и правила валидации, что `POST /`.
 
-### `DELETE /contacts/:id`
+### `DELETE /:id`
 
 Удаляет сотрудника из MongoDB. Требует JWT-заголовок.
 

@@ -136,7 +136,7 @@ export default function App() {
       setIsEmployeesLoading(true);
 
       try {
-        const response=await fetch(`${apiUrl}/contacts`,{
+        const response=await fetch(`${apiUrl}`,{
           signal: controller.signal,
         });
         const data=(await response.json()) as { employees?: Employee[]; message?: string };
@@ -394,7 +394,7 @@ export default function App() {
 
     try {
       const isEditMode=Boolean(editingEmployee);
-      const response=await fetch(`${apiUrl}/contacts${isEditMode? `/${editingEmployee?.id}`:""}`,{
+      const response=await fetch(`${apiUrl}${isEditMode? `/${editingEmployee?.id}`:""}`,{
         method: isEditMode? "PUT":"POST",
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -438,7 +438,7 @@ export default function App() {
     setIsEmployeeDeleting(true);
 
     try {
-      const response=await fetch(`${apiUrl}/contacts/${deletingEmployee.id}`,{
+      const response=await fetch(`${apiUrl}/${deletingEmployee.id}`,{
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -471,8 +471,8 @@ export default function App() {
 
     const path =
       adminModal.action==="reset"
-        ? `${apiUrl}/contacts/${adminModal.employee.id}/admin/reset-password`
-        :`${apiUrl}/contacts/${adminModal.employee.id}/admin`;
+        ? `${apiUrl}/${adminModal.employee.id}/admin/reset-password`
+        :`${apiUrl}/${adminModal.employee.id}/admin`;
     const options: RequestInit =
       adminModal.action==="revoke"
         ? {

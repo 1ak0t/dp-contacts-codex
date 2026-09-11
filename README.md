@@ -46,7 +46,7 @@ npm run import:csv -- --dry-run
 ### Фронтенд
 
 В корне проекта выполните `npm ci`, затем `npm run build`.
-При сборке `.env.production` задаёт `VITE_API_URL=https://contacts.detail-project.ru:4000`.
+При сборке `.env.production` задаёт `VITE_API_URL=https://zeta.detail-project.ru:4000`.
 Проверьте, что старые `.env.local`, `.env.production.local` или переменные
 окружения не переопределяют это значение.
 
@@ -62,7 +62,7 @@ HTTPS, IP `10.13.2.73`, порт `443`, имя узла `contacts.detail-project
 `web.config`, добавленный нашим отменённым коммитом IIS, если он там остался.
 Если файл содержит другие настройки, уберите только правило `Contacts API`.
 В этой схеме браузер обращается напрямую к HTTPS-порту 4000 по маршрутам
-`/contacts` и `/auth/*`; прокси `/api` не используется.
+`/` и `/auth/*`; прокси `/api` не используется.
 
 ### Бэкенд и MongoDB
 
@@ -110,13 +110,13 @@ MongoDB оставьте слушать `127.0.0.1`: клиентам не ну�
 
 ### Проверка
 
-1. На сервере откройте `https://contacts.detail-project.ru:4000/health`.
+1. На сервере откройте `https://zeta.detail-project.ru:4000/health`.
 2. С компьютера в `10.13.2.0/24` откройте
-   `https://contacts.detail-project.ru:4000/health`: ожидается `{"status":"ok"}`.
-3. Откройте `https://contacts.detail-project.ru:4000/contacts`: ожидается JSON с `employees`.
+   `https://zeta.detail-project.ru:4000/health`: ожидается `{"status":"ok"}`.
+3. Откройте `https://zeta.detail-project.ru:4000/`: ожидается JSON с `employees`.
    Этот шаг проверяет и доступ к базе; `/health` базу не проверяет.
 4. Откройте `https://contacts.detail-project.ru`, проверьте контакты и вход.
-   В Network адрес запросов должен начинаться с `https://contacts.detail-project.ru:4000/`.
+   В Network адрес запросов должен начинаться с `https://zeta.detail-project.ru:4000/`.
 
 Если видите `/api/contacts` на порту 80, загружена прежняя сборка.
 Если порт 4000 недоступен, проверьте процесс API, `HOST`, сертификат,
